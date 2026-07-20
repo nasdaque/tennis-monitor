@@ -2,7 +2,7 @@ name: Tennis Court Monitor
 
 on:
   schedule:
-    - cron: "*/15 * * * *"   # 每 15 分钟跑一次（UTC 触发，但脚本里会用 Europe/London 判断时间规则）
+    - cron: "*/15 * * * *"   
   workflow_dispatch:
 
 jobs:
@@ -12,8 +12,6 @@ jobs:
       NTFY_TOPIC: Tennis-xiao-east
       STATE_PATH: state/state.json
       TZ: Europe/London
-      # 如果你在 ntfy 上设置了 token，把它放到仓库 secrets：NTFY_TOKEN
-      # 没有 token 可以注释掉这一行
       NTFY_TOKEN: ${{ secrets.NTFY_TOKEN }}
 
     steps:
@@ -47,7 +45,7 @@ jobs:
 
       - name: Install Playwright browsers
         run: |
-          python -m playwright install --with-deps chromium
+          python -m playwright install --force --with-deps chromium
 
       - name: Run monitor
         run: |
