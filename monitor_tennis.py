@@ -132,10 +132,28 @@ def main():
 
     notifications = []
 
-    with sync_playwright() as p:
+        with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         page.goto(BASE_URL, wait_until="networkidle", timeout=60_000)
+
+        # ===== 调试打印 =====
+        print("页面标题:", page.title())
+        print("页面内容长度:", len(page.content()))
+
+        for court in COURTS:
+            try:
+                # 先看看能不能找到这个 court 文字
+                count = page.locator(f"text={court}").count()
+                print(f"在页面中找到 '{court}' 的次数: {count}")
+
+                slots = extract_bookable_slots(page, court)
+                print(f"'{court}' 解析到的可订时间数量: {len(slots)}")
+            except Exception as e:
+                print(f"解析 {court} 出错: {e}")
+        # ===== 调试结束 =====
+
+        browser.close()
 
         for court in COURTS:
             slots = extract_bookable_slots(page, court)
