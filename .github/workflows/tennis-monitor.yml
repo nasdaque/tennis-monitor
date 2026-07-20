@@ -2,7 +2,7 @@ name: Tennis Court Monitor
 
 on:
   schedule:
-    - cron: "*/15 * * * *"   # 每 15 分钟跑一次（可按需调整）
+    - cron: "*/15 * * * *"   # 每 15 分钟跑一次（UTC 触发，但脚本里会用 Europe/London 判断时间规则）
   workflow_dispatch:
 
 jobs:
@@ -12,20 +12,33 @@ jobs:
       NTFY_TOPIC: Tennis-xiao-east
       STATE_PATH: state/state.json
       TZ: Europe/London
+      # 如果你在 ntfy 上设置了 token，把它放到仓库 secrets：NTFY_TOKEN
+      # 没有 token 可以注释掉这一行
+      NTFY_TOKEN: ${{ secrets.NTFY_TOKEN }}
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Ensure state directory exists
+        run: mkdir -p state
+
+      - name: Set date key (Europe/London)
+        id: date
+        run: |
+          echo "today=$(TZ=Europe/London date +%F)" >> $GITHUB_OUTPUT
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Restore state cache
+      - name: Restore state cache (per day)
         uses: actions/cache@v4
         with:
           path: state
-          key: tennis-state-${{ github.run_id }}
+          key: tennis-state-${{ steps.date.outputs.today }}
+          restore-keys: |
+            tennis-state-
 
       - name: Install Python deps
         run: |
