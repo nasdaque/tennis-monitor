@@ -1,0 +1,7 @@
+{
+  "base_url": "https://tennistowerhamlets.com/book/courts/poplar-rec-ground",
+  "days_ahead": 7,
+  "desired_times": ["18:00", "19:00", "20:00"],
+  "weekdays": null,
+  "ntfy_topic": "改成你自己的独特名字-例如-zhang-tennis-poplar-8823"
+}
